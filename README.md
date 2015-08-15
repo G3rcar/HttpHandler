@@ -16,6 +16,6 @@ Luego, en las dependiencias usaremos
 
 ```gradle
 dependencies {
-    compile 'com.github.G3rcar:http-handler:1.0.2'
+    compile 'com.github.G3rcar:HttpHandler:1.0.2'
 }
 ```
