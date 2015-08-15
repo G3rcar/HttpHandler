@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">RemoteConnectionHandler</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_get">GET request</string>
+    <string name="action_post">POST request</string>
+    <string name="action_delete">DELETE request</string>
+</resources>
