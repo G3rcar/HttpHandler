@@ -9,8 +9,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import org.apache.http.NameValuePair;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,44 +33,6 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     private OnRemoteConnectionListener listener;
 
     private int statusCode = 200;
-
-
-    /**
-     * Use {@link #setPostParams(List)} instead
-     */
-    @Deprecated
-    public void setParametrosPost(List<NameValuePair> postValues){
-        List<PostValue> values = new ArrayList<PostValue>();
-        for(NameValuePair value : postValues){
-            values.add(new PostValue(value.getName(),value.getValue()));
-        }
-        this.setPostParams(values);
-    }
-
-    /**
-     * Use {@link #setRequestId(int)} instead
-     */
-    @Deprecated
-    public void setIdentificador(int id){
-        this.setRequestId(id);
-    }
-
-    /**
-     * Use {@link #isPost(boolean)} instead
-     */
-    @Deprecated
-    public void setPeticionPost(boolean isPost) {
-        this.isPost(isPost);
-    }
-
-    /**
-     * Use {@link #isDelete(boolean)} instead
-     */
-    @Deprecated
-    public void setPeticionDelete(boolean isDelete) {
-        this.isDelete(isDelete);
-    }
-
 
     /**
      * Set the request id as int to use in the interface
