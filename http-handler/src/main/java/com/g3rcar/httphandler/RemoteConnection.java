@@ -1,5 +1,6 @@
 package com.g3rcar.httphandler;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -26,13 +27,19 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     private String urlParams = "";                  // Request URL params
     private boolean isPost = false;                 // Is the request a POST one?
     private boolean isDelete = false;               // Is the request a DELETE one?
-    private List<PostValue> postValues;             // List of POST values, if is POST
-    private List<PostValue> headerValues;           // List of Header values
+    private List<PostValue> postValues = null;      // List of POST values, if is POST
+    private List<PostValue> headerValues = null;    // List of Header values
     private int requestId = 0;                      // Request ID
-
+    private Context context = null;
     private OnRemoteConnectionListener listener;
 
     private int statusCode = 200;
+
+    public RemoteConnection(){}
+
+    public RemoteConnection(Context context){
+        this.context = context;
+    }
 
     /**
      * Set the request id as int to use in the interface
@@ -85,6 +92,14 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     }
 
     /**
+     * Get the post params to send
+     * @return List<PostValue> array list for values
+     */
+    public List<PostValue> getPostParams(){
+        return this.postValues;
+    }
+
+    /**
      * Set the header params to send
      * @param headerValues array list for values
      */
@@ -93,11 +108,27 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     }
 
     /**
+     * Get the header params to send
+     * @return List<PostValue> array list for values
+     */
+    public List<PostValue> getHeaderParams(){
+        return this.headerValues;
+    }
+
+    /**
      * Set the listener that has implemented the interface {@link OnRemoteConnectionListener}
      * @param listener OnRemoteConnectionListener implemented
      */
     public void setOnRemoteConnectionListener(OnRemoteConnectionListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * Return the Context
+     * @return Context
+     */
+    public Context getContext(){
+        return this.context;
     }
 
 
