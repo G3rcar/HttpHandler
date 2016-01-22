@@ -144,7 +144,7 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     }
 
     protected void onPostExecute(String content) {
-        if(this.statusCode==200){
+        if(this.isOk(this.statusCode)){
             listener.connectionSuccess(this.requestId,content);
         }else{
             listener.connectionFails(this.requestId,this.statusCode);
