@@ -192,7 +192,7 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
             }
 
             this.statusCode = response.code();
-            if (this.statusCode == 200) {
+            if (this.isOk(this.statusCode)) {
                 return response.body().string();
             } else {
                 return "";
@@ -208,6 +208,10 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
             return "";
         }
 
+    }
+
+    private boolean isOk(int statusCode) {
+        return (statusCode<300 && statusCode >=200);
     }
 
 
