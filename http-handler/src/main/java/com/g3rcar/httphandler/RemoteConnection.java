@@ -4,15 +4,17 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by gerardo on 20/07/15.
@@ -30,6 +32,7 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     private List<PostValue> postValues = null;      // List of POST values, if is POST
     private List<PostValue> headerValues = null;    // List of Header values
     private int requestId = 0;                      // Request ID
+    private boolean insecure = false;               // Tells if the connection should be insecure (ONLY for testing purposes
     private Context context = null;
     private OnRemoteConnectionListener listener;
 
@@ -124,6 +127,22 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     }
 
     /**
+     * Get if should do an insecure connection
+     * @return boolean
+     */
+    public boolean isInsecure() {
+        return insecure;
+    }
+
+    /**
+     * Set if should do an insecure connection
+     * @param insecure boolean
+     */
+    public void setInsecure(boolean insecure) {
+        this.insecure = insecure;
+    }
+
+    /**
      * Return the Context
      * @return Context
      */
@@ -132,11 +151,10 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     }
 
 
-
-
-
-
-
+    /**
+     * Override when is needed some actions before execute
+     */
+    public void preExecuteConfiguration(){ }
 
     @Override
     protected String doInBackground(Void... params) {
@@ -152,12 +170,19 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     }
 
     public String executeRequest() {
+        this.preExecuteConfiguration();
+
         Log.d(TAG, this.url + this.urlParams);
 
         RequestBody body;                                   // Used if is post
-        OkHttpClient client = new OkHttpClient();           // Modern HTTP client
+        OkHttpClient client;
         Request.Builder builder = new Request.Builder();    // Request builder
 
+        if(isInsecure()){
+            client = UnsafeOkHttpClient.build();
+        }else{
+            client = new OkHttpClient();
+        }
 
         // Starts building request
         builder.url(this.url + this.urlParams);
@@ -171,7 +196,8 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
                 this.postValues = this.dummyPost();
             }
 
-            FormEncodingBuilder formBuilder = new FormEncodingBuilder();
+            FormBody.Builder formBuilder = new FormBody.Builder();
+
             for(int i=0; i<this.postValues.size(); i++){
                 formBuilder.add(
                         postValues.get(i).getKey(),
@@ -186,12 +212,11 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
         try {
             Response response = client.newCall(request).execute();
 
+            this.statusCode = response.code();
             if (!response.isSuccessful()) {
-                this.statusCode = 500;
                 return "";
             }
 
-            this.statusCode = response.code();
             if (this.isOk(this.statusCode)) {
                 return response.body().string();
             } else {

@@ -1,0 +1,67 @@
+package com.g3rcar.httphandler;
+
+import android.annotation.SuppressLint;
+
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
+
+/**
+ * Created by gerardo.calderon on 23/11/2016.
+ * Unsafe client for testing purposes
+ */
+
+public class UnsafeOkHttpClient {
+    private final static X509TrustManager x509TrustManager = new X509TrustManager() {
+        @SuppressLint("TrustAllX509TrustManager")
+        @Override
+        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException { }
+
+        @SuppressLint("TrustAllX509TrustManager")
+        @Override
+        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException { }
+
+        @Override
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return new java.security.cert.X509Certificate[]{};
+        }
+    };
+
+    // Create a trust manager that does not validate certificate chains
+    private final static TrustManager[] trustAllCerts = new TrustManager[] { x509TrustManager };
+
+
+    public static OkHttpClient build(){
+        try {
+
+
+            // Install the all-trusting trust manager
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.sslSocketFactory(sslSocketFactory,x509TrustManager);
+            builder.hostnameVerifier(new HostnameVerifier() {
+                @SuppressLint("BadHostnameVerifier")
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            return builder.build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+}
