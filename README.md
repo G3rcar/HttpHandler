@@ -1,10 +1,10 @@
 # HTTP Handler
 
-Hace uso de un AsyncTask para realizar las peticiones al servidor
+Use an AsyncTask to execute requests to the server, avoid all the boilerplate and use only some methods
 
-## Uso
+## How to use
 
-En el archivo `app/build.gradle` agregaremos
+In the file `app/build.gradle` add:
 
 ```gradle
 repositories{
@@ -12,10 +12,12 @@ repositories{
 }
 ```
 
-Luego, en las dependiencias usaremos
-
+Then, in the dependencies add:
 ```gradle
 dependencies {
-    compile 'com.github.G3rcar:HttpHandler:1.0.2'
+    implementation 'com.github.G3rcar:HttpHandler:2.0.0'
 }
 ```
+
+## Example code
+[sample/MainActivity.java](app/src/main/java/com/g3rcar/httphandler/sample/MainActivity.java)
