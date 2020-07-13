@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -24,6 +25,8 @@ import okhttp3.Response;
 public class RemoteConnection extends AsyncTask<Void, Void, String> {
 
     private static final String TAG = "http-handler Library";
+    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final Integer JSON = 1;
 
     private String url;                             // Request URL
     private String urlParams = "";                  // Request URL params
@@ -36,13 +39,25 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     private Context context = null;
     private OnRemoteConnectionListener listener;
 
-    private int statusCode = 200;
+    private int statusCode = -1;
+    private MediaType mediaType = null;
+    private String postBody = null;
 
     public RemoteConnection(){}
 
     public RemoteConnection(Context context){
         this.context = context;
     }
+
+    /**
+     * Get the Media Type to know if JSON
+     * @return MediaType JSON
+     */
+    public static MediaType getJsonMediaType(){
+        return MEDIA_TYPE_JSON;
+    }
+
+
 
     /**
      * Set the request id as int to use in the interface
@@ -103,6 +118,35 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
     }
 
     /**
+     * Set the post string as JSON to send. This automatically set the request as a Post one
+     * @param postValues JSON String
+     */
+    public void setPostJsonBody(String postValues){
+        this.isPost(true);
+        this.mediaType = MEDIA_TYPE_JSON;
+        this.postBody = postValues;
+    }
+
+    /**
+     * Set the post body as custom MediaType to send. This automatically set the request as a Post one
+     * @param type MediaType
+     * @param postValues JSON String
+     */
+    public void setPostBody(MediaType type, String postValues){
+        this.isPost(true);
+        this.mediaType = type;
+        this.postBody = postValues;
+    }
+
+    /**
+     * Get the post body to send
+     * @return String
+     */
+    public String getPostBody(){
+        return this.postBody;
+    }
+
+    /**
      * Set the header params to send
      * @param headerValues array list for values
      */
@@ -140,14 +184,6 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
      */
     public void setInsecure(boolean insecure) {
         this.insecure = insecure;
-    }
-
-    /**
-     * Return the Context
-     * @return Context
-     */
-    public Context getContext(){
-        return this.context;
     }
 
 
@@ -191,7 +227,12 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
                 builder.addHeader(value.getKey(),value.getValue());
             }
         }
-        if(this.isPost || this.isDelete){
+        if((this.isPost || this.isDelete) && this.postBody!=null && this.mediaType!=null){
+            body = RequestBody.create(postBody, mediaType);
+            if(this.isPost) builder.post(body);
+            if(this.isDelete) builder.delete(body);
+
+        }else if(this.isPost || this.isDelete){
             if(this.postValues == null){
                 this.postValues = this.dummyPost();
             }
@@ -228,9 +269,8 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
             Log.d(TAG, "Missing Internet Permission in AndroidManifest?");
             return "ERROR no internet permission";
         } catch (IOException e) {
-            e.printStackTrace();
-            this.statusCode = 500;
-            return "";
+            Log.d(TAG, ( e.getMessage() == null ? "Unknown error" : e.getMessage() ));
+            return e.getMessage();
         }
 
     }
@@ -245,7 +285,7 @@ public class RemoteConnection extends AsyncTask<Void, Void, String> {
      * @return List<PostValue> with one dummy element
      */
     private List<PostValue> dummyPost() {
-        List<PostValue> dummy = new ArrayList<PostValue>();
+        List<PostValue> dummy = new ArrayList<>();
         dummy.add(new PostValue("-|-|-",""));
         return dummy;
     }

@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 29
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.g3rcar.httphandler.sample"
         minSdkVersion 8
-        targetSdkVersion 23
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -20,7 +20,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile project(':http-handler')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation project(':http-handler')
 }

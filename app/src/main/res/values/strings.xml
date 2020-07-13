@@ -5,5 +5,6 @@
 
     <string name="action_get">GET request</string>
     <string name="action_post">POST request</string>
+    <string name="action_post_body">POST Body as JSON request</string>
     <string name="action_delete">DELETE request</string>
 </resources>

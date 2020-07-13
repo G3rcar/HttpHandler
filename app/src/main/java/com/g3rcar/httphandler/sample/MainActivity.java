@@ -1,6 +1,6 @@
 package com.g3rcar.httphandler.sample;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,16 +9,19 @@ import android.widget.TextView;
 import com.g3rcar.httphandler.OnRemoteConnectionListener;
 import com.g3rcar.httphandler.PostValue;
 import com.g3rcar.httphandler.RemoteConnection;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.g3rcar.httphandler.RemoteConnection.JSON;
 
 
 public class MainActivity extends AppCompatActivity implements OnRemoteConnectionListener {
 
     public static final String GET = "http://g3rcar.com/library/";
     public static final String POST = "http://g3rcar.com/library/";
-    public static final String DELETE = "http://g3rcar.com/library/";
+    public static final String DELETE = "http://g3rcar.com/library/";;
 
     TextView txvResult;
 
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements OnRemoteConnectio
         switch(id) {
             case R.id.action_get: doGet(); break;
             case R.id.action_post: doPost(); break;
+            case R.id.action_post_body: doPostBody(); break;
             case R.id.action_delete: doDelete(); break;
         }
 
@@ -70,6 +74,20 @@ public class MainActivity extends AppCompatActivity implements OnRemoteConnectio
         params.add(new PostValue("param1","post1"));
         params.add(new PostValue("param2","post2"));
         connection.setPostParams(params);
+        connection.setHeaderParams(headers);
+        connection.execute();
+    }
+
+    private void doPostBody(){
+        RemoteConnection connection = new RemoteConnection();
+        connection.setOnRemoteConnectionListener(this);
+        List<PostValue> headers = new ArrayList<>();
+        headers.add(new PostValue("token", "dadadadadadad"));
+        connection.setURL(POST);
+
+        BodyExample bodyExample = new BodyExample(true,"Test","Test data");
+
+        connection.setPostJsonBody(new Gson().toJson(bodyExample));
         connection.setHeaderParams(headers);
         connection.execute();
     }
